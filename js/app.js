@@ -5,7 +5,7 @@ let uploadedSkins = [];
 
 {
   /**
-   * @param {HTMLInputElement} button 
+   * @param {HTMLButtonElement} button 
    */
   function addSkintypeSelection(button) {
     button.addEventListener('click', () => {
