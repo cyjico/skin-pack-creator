@@ -94,13 +94,13 @@ let uploadedSkins = [];
   const skinpackDownloader = document.getElementById('download-skinpack');
   skinpackDownloader.addEventListener('click', () => {
     if (uploadedSkins) {
-      alert('No skins present in the skinpack.');
+      alert('No skins present in the Skin pack.');
       return;
     }
 
-    console.log('Generating Skinpack...');
     const zip = new JSZip();
     
+    // manifest.json
     const manifestJSON = {
       format_version: 1,
       header: {
@@ -126,19 +126,21 @@ let uploadedSkins = [];
     };
 
     if (manifestJSON.header.name.length <= 0) {
-      alert('Skinpack has no name.');
+      alert('Skin pack has no name.');
       return;
     }
 
     zip.file('manifest.json', JSON.stringify(manifestJSON));
 
+    // skins.json
     const skinsJSON = {
       geometry: 'skinpacks/skins.json',
       skins: [],
-      serialize_name: 'SkinpackMaker',
-      localization_name: 'SkinpackMaker'
+      serialize_name: 'SkinpackCreator',
+      localization_name: 'SkinpackCreator'
     };
 
+    // texts/en_US.lang
     let en_US = `skinpack.SkinpackMaker=${manifestJSON.header.name}\n\n`;
 
     const divisonSkins = document.getElementsByClassName('skin');
@@ -152,14 +154,14 @@ let uploadedSkins = [];
         texture: uploadedSkins[i].name,
         type: 'free',
       });
+      
       const skinName = divisonSkins[i].nextElementSibling.firstElementChild.value;
       if (!skinName || skinName.length <= 0) {
         alert(`Skin ${i + 1} has no name.`);
         return;
       }
 
-      en_US += `skin.SkinpackMaker.${skinsJSON.skins[i].localization_name}=` +
-      skinName + (i === uploadedSkins.length - 1 ? '' : '\n');
+      en_US += `skin.SkinpackCreator.${skinsJSON.skins[i].localization_name}=${skinName}${(i === uploadedSkins.length - 1 ? '' : '\n')}`;
 
       zip.file(uploadedSkins[i].name, uploadedSkins[i]);
     }
@@ -167,10 +169,8 @@ let uploadedSkins = [];
     zip.file('skins.json', JSON.stringify(skinsJSON));
     zip.file('texts/en_US.lang', en_US);
 
-    console.log('Downloading Skinpack...')
     zip.generateAsync({type:'blob'})
     .then((content) => {
-      console.log('Finished...');
       saveAs(content, `${manifestJSON.header.name}.mcpack`);
     });
   });
