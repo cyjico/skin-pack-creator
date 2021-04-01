@@ -93,7 +93,7 @@ let uploadedSkins = [];
 
   const skinpackDownloader = document.getElementById('download-skinpack');
   skinpackDownloader.addEventListener('click', () => {
-    if (uploadedSkins) {
+    if (uploadedSkins.length == 0) {
       alert('No skins present in the Skin pack.');
       return;
     }
