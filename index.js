@@ -169,7 +169,10 @@ let uploadedSkins = [];
     zip.file('skins.json', JSON.stringify(skinsJSON));
     zip.file('texts/en_US.lang', en_US);
 
-    zip.generateAsync({type:'blob'})
+    zip.generateAsync({
+      type: 'blob',
+      mimeType:  'application/octet-stream',
+    })
     .then((content) => {
       saveAs(content, `${manifestJSON.header.name}.mcpack`);
     });
