@@ -1,2 +1,4 @@
 # skin-pack-creator
-Webpage for creating a Minecraft Skin pack (project is not affiliated with Mojang).
+Client-side webpage for creating a Minecraft Skin Pack.
+
+Project is not affiliated with Mojang.
