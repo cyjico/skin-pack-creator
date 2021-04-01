@@ -1,0 +1,44 @@
+
+img {
+  width: auto;
+  height: 8vw;
+  image-rendering: pixelated;
+}
+
+input {
+  width: 100%;
+  height: 75%;
+  padding: 1rem;
+  font-size: 1.5rem;
+  background-color: #f3f7fc;
+  border: 0.05vw rgb(208, 213, 218) solid;
+}
+
+input:hover {
+  border: 0.05vw rgb(208, 213, 218) solid;
+}
+
+input:focus {
+  outline: none;
+}
+
+div {
+  width: 100%;
+  height: 75%;
+  display: grid;
+}
+
+div button {
+  font-size: 1rem;
+  color: #2B2B2B;
+  background-color: #f3f7fc;
+  border: 0.05vw rgb(208, 213, 218) solid;
+}
+
+div button:focus {
+  outline: none;
+}
+
+div button.type-selected {
+  border: 0.05vw rgb(36, 37, 37) solid;
+}
