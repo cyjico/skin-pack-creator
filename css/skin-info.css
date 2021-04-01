@@ -30,9 +30,9 @@ div {
 
 div button {
   font-size: 1rem;
-  color: #2B2B2B;
+  color: #2b2b2b;
   background-color: #f3f7fc;
-  border: 0.05vw rgb(208, 213, 218) solid;
+  border: 0.05vw #d0d5da solid;
 }
 
 div button:focus {
@@ -40,5 +40,5 @@ div button:focus {
 }
 
 div button.type-selected {
-  border: 0.05vw rgb(36, 37, 37) solid;
+  border: 0.05vw #8d9696 solid;
 }
