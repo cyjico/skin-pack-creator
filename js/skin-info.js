@@ -1,3 +1,4 @@
+import SkinViewer from './skin-viewer.js';
 
 /**
  * Information about skin
@@ -6,6 +7,11 @@
  * @extends {HTMLElement}
  */
 class SkinInfo extends HTMLElement {
+  /** @type {Image} */
+  #skinViewerImage;
+  /** @type {SkinViewer} */
+  #skinViewer;
+
   /** @type {HTMLImageElement} */
   #skinElement;
 
@@ -25,7 +31,6 @@ class SkinInfo extends HTMLElement {
     linkElement.href = 'css/skin-info.css';
 
     this.#skinElement = document.createElement('img');
-    this.#skinElement.src = this.skin;
 
     this.#nameElement = document.createElement('input');
     this.#nameElement.placeholder = 'Name';
@@ -54,6 +59,13 @@ class SkinInfo extends HTMLElement {
       (this.type === 'slim' ? slim : broad).classList.add('type-selected');
     }
 
+    this.#skinViewerImage = new Image();
+    this.#skinViewerImage.src = this.skin;
+    this.#skinViewerImage.onload = () => {
+      this.#skinViewer = new SkinViewer(this.#skinViewerImage);
+      this.#skinElement.src = this.#skinViewer.generate(this.type === 'slim');
+    };
+
     shadowRoot.append(
       linkElement,
       this.#skinElement,
@@ -68,7 +80,7 @@ class SkinInfo extends HTMLElement {
 
   set skin(value) {
     this.setAttribute('skin', value);
-    this.#skinElement.src = value;
+    this.#skinViewerImage.src = value;
   }
 
   get name() {
@@ -95,6 +107,8 @@ class SkinInfo extends HTMLElement {
       default:
         return;
     }
+
+    this.#skinElement.src = this.#skinViewer.generate(value === 'slim');
   }
 
   /**
@@ -108,6 +122,9 @@ class SkinInfo extends HTMLElement {
   #addTypeSelection(button) {
     button.addEventListener('click', () => {
       this.setAttribute('type', button.innerText.toLowerCase());
+      this.#skinElement.src = this.#skinViewer.generate(
+        button.innerText.toLowerCase() === 'slim'
+      );
 
       button.classList.add('type-selected');
       (button.nextElementSibling || button.previousElementSibling).classList
