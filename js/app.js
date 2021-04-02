@@ -2,7 +2,7 @@ import SkinInfo from './skin-info.js';
 
 (function() {
   /** @type {File[]} */
-  let uploadedSkins = [];
+  const uploadedSkins = [];
 
   const uploadListener = (function() {
     const mainElement = document.getElementsByTagName('main')[0];
@@ -104,7 +104,7 @@ import SkinInfo from './skin-info.js';
        *     geometry: string,
        *     texture: string,
        *     type: 'free'
-       *   }[]
+       *   }[],
        *   serialize_name: string,
        *   localization_name: string,
        * }}
@@ -134,14 +134,14 @@ import SkinInfo from './skin-info.js';
 
         skinsJSON.skins.push({
           localization_name: `Skin${i + 1}`,
-          geometry: (skinInfo[i].type == 'slim' ?
-            'geometry.humanoid.customSlim' : 'geometry.humanoid.custom'),
+          geometry: 'geometry.humanoid.custom' +
+          skinInfo[i].type == 'slim' ? 'Slim' : '',
           texture: uploadedSkins[i].name,
           type: 'free',
         });
   
-        en_US += `skin.SkinPackCreator.${skinsJSON.skins[i].localization_name}` +
-        `=${skinInfo[i].name}${(i == uploadedSkins.length - 1 ? '' : '\n')}`;
+        en_US += 'skin.SkinPackCreator.' +
+        skinsJSON.skins[i].localization_name + skinInfo[i].name + '\n';
   
         zip.file(uploadedSkins[i].name, uploadedSkins[i]);
       }
