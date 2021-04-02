@@ -1,4 +1,10 @@
 
+/**
+ * Information about skin
+ *
+ * @class SkinInfo
+ * @extends {HTMLElement}
+ */
 class SkinInfo extends HTMLElement {
   /** @type {HTMLImageElement} */
   #skinElement;
@@ -36,11 +42,11 @@ class SkinInfo extends HTMLElement {
     {
       const broad = document.createElement('button');
       broad.innerText = 'Broad';
-      this.#bindTypeSelection(broad);
+      this.#addTypeSelection(broad);
 
       const slim = document.createElement('button');
       slim.innerText = 'Slim';
-      this.#bindTypeSelection(slim);
+      this.#addTypeSelection(slim);
 
       this.#typeElement.append(broad, slim);
       
@@ -91,7 +97,15 @@ class SkinInfo extends HTMLElement {
     }
   }
 
-  #bindTypeSelection(button) {
+  /**
+   * Add type selection for a button.
+   * 
+   * @private
+   * @param {HTMLButtonElement} button 
+   * 
+   * @memberof SkinInfo
+   */
+  #addTypeSelection(button) {
     button.addEventListener('click', () => {
       this.setAttribute('type', button.innerText.toLowerCase());
 
