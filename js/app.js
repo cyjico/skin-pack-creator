@@ -46,7 +46,25 @@ import SkinInfo from './skin-info.js';
   
       const zip = new JSZip();
       
-      // manifest.json
+      /**
+       * File that describes the skin pack.
+       *
+       * @type {{
+       *   format_version: number,
+       *   header: {
+       *     name: string,
+       *     uuid: string,
+       *     version: [ 1, 1, 0 ]
+       *   },
+       *   modules: [
+       *     {
+       *       type: 'skin_pack',
+       *       uuid: string,
+       *       version: [ 1, 1, 0 ]
+       *     }
+       *   ]
+       * }}
+       */
       const manifestJSON = {
         format_version: 1,
         header: {
@@ -76,9 +94,21 @@ import SkinInfo from './skin-info.js';
         return;
       }
   
-      zip.file('manifest.json', JSON.stringify(manifestJSON));
-  
-      // skins.json
+      /**
+       * File that describes each skin of the skin pack.
+       * 
+       * @type {{
+       *   geometry: 'skinpacks/skins.json',
+       *   skins: {
+       *     localization_name: string,
+       *     geometry: string,
+       *     texture: string,
+       *     type: 'free'
+       *   }[]
+       *   serialize_name: string,
+       *   localization_name: string,
+       * }}
+       */
       const skinsJSON = {
         geometry: 'skinpacks/skins.json',
         skins: [],
@@ -86,8 +116,12 @@ import SkinInfo from './skin-info.js';
         localization_name: 'SkinPackCreator'
       };
   
-      // texts/en_US.lang
-      let en_US = `skinpack.SkinPackCreator=${manifestJSON.header.name}\n\n`;
+      /**
+       * File that describes the text of each skin in US-English.
+       *
+       * @type {string} 
+       */
+      let en_US = `skinpack.SkinPackCreator=${manifestJSON.header.name}\n`;
   
       /** @type {HTMLCollectionOf<SkinInfo>} */
       const skinInfo = document.getElementsByTagName('skin-info');
@@ -100,8 +134,8 @@ import SkinInfo from './skin-info.js';
 
         skinsJSON.skins.push({
           localization_name: `Skin${i + 1}`,
-          geometry: (skinInfo[i].type == 'broad' ?
-            'geometry.humanoid.custom' : 'geometry.humanoid.customSlim'),
+          geometry: (skinInfo[i].type == 'slim' ?
+            'geometry.humanoid.customSlim' : 'geometry.humanoid.custom'),
           texture: uploadedSkins[i].name,
           type: 'free',
         });
@@ -112,10 +146,11 @@ import SkinInfo from './skin-info.js';
         zip.file(uploadedSkins[i].name, uploadedSkins[i]);
       }
   
-      zip.file('skins.json', JSON.stringify(skinsJSON));
-      zip.file('texts/en_US.lang', en_US);
-  
-      zip.generateAsync({
+      zip
+      .file('manifest.json', JSON.stringify(manifestJSON))
+      .file('skins.json', JSON.stringify(skinsJSON))
+      .file('texts/en_US.lang', en_US)
+      .generateAsync({
         type: 'blob',
         mimeType: 'application/octet-stream',
       })
