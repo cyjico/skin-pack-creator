@@ -1,19 +1,27 @@
 
 @font-face {
   font-family: 'Roboto-Regular';
-  src: url('fonts/Roboto-Regular.ttf') format('truetype');
+  src: url('fonts/Roboto/Roboto-Regular.ttf') format('truetype');
 }
 
 @font-face {
   font-family: 'Roboto-Light';
-  src: url('fonts/Roboto-Light.ttf') format('truetype');
+  src: url('fonts/Roboto/Roboto-Light.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Minecraft-Regular';
+  src: url('fonts/Minecraft/Minecraft-Regular.ttf') format('truetype');
 }
 
 /* Body */
 
 body {
+  flex: 1;
+  flex-direction: column;
   margin: 0px;
   height: 100%;
+  display: flex;
   color: #2b2b2b;
   background-color: #f3f7fc;
   font-family: 'Roboto-Regular', sans-serif;
@@ -44,11 +52,12 @@ header input:focus {
 }
 
 header h1 {
+  margin: 0;
   float: right;
   color: #b2b7bd;
   font-size: inherit;
+  margin-right: 1.5em;
   font-weight: normal;
-  margin: 0px 1.5em 0 0;
   background-color: transparent;
   font-family: 'Roboto-Regular', sans-serif;
 }
@@ -68,18 +77,25 @@ main > * {
   grid-template-columns: 1fr 3fr 1fr;
 }
 
-/* Footer */
+/* Top Footer */
 
-footer {
+#top-footer {
   display: grid;
+  margin-bottom: auto;
   grid-template-columns: repeat(2, 1fr);
+}
+
+#upload-skin + label:active, #download-skin-pack:active {
+  border: 0.05vw #8d9696 solid;
 }
 
 #upload-skin + label {
   margin: 1rem;
+  display: flex;
   padding: 1rem;
   font-size: 1rem;
-  text-align: center;
+  align-items: center;
+  justify-content: center;
   border: 0.05vw #d0d5da solid;
 }
 
@@ -91,7 +107,7 @@ footer {
   margin: 1rem;
   padding: 1rem;
   font-size: 1rem;
-  color: #2B2B2B;
+  color: #2b2b2b;
   background-color: #f3f7fc;
   border: 0.05vw #d0d5da solid;
 }
@@ -100,8 +116,20 @@ footer {
   outline: none;
 }
 
-#upload-skin + label:active, #download-skin-pack:active {
-  border: 0.05vw #8d9696 solid;
+/* Bottom Footer */
+
+#bottom-footer {
+  display: flex;
+  margin-top: auto;
+  grid-column-end: 3;
+  align-items: center;
+  grid-column-start: 1;
+  justify-content: center;
+}
+
+#bottom-footer p {
+  display: inline-block;
+  font-family: 'Minecraft-Regular', sans-serif;
 }
 
 /* Global Queries */
@@ -110,4 +138,14 @@ h1, h3 {
   font-weight: normal;
 }
 
+[class^="icon"] {
+  height: 1.25em;
+  vertical-align: text-top;
+  margin: 0 0.25em 0 0.25em;
+}
+
+.icon-profile {
+  top: 10px;
+  image-rendering: pixelated;
+}
 
