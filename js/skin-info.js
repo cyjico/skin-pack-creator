@@ -22,9 +22,9 @@ class SkinInfo extends HTMLElement {
     this.#skinElement.src = this.skin;
 
     this.#nameElement = document.createElement('input');
-    this.#nameElement.value = this.name;
     this.#nameElement.placeholder = 'Name';
     this.#nameElement.spellcheck = false;
+    this.#nameElement.value = this.name;
     this.#nameElement.type = 'text';
 
     this.#nameElement.addEventListener('change', (ev) => {
