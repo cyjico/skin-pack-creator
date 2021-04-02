@@ -1,4 +1,9 @@
 
+@font-face {
+  font-family: 'Minecraft-Regular';
+  src: url('fonts/Minecraft/Minecraft-Regular.ttf') format('truetype');
+}
+
 img {
   width: auto;
   height: 8vw;
@@ -12,6 +17,7 @@ input {
   font-size: 1.5rem;
   background-color: #f3f7fc;
   border: 0.05vw #d0d5da solid;
+  font-family: 'Minecraft-Regular', sans-serif;
 }
 
 input:hover {
@@ -33,6 +39,7 @@ div button {
   color: #2b2b2b;
   background-color: #f3f7fc;
   border: 0.05vw #d0d5da solid;
+  font-family: 'Minecraft-Regular', sans-serif;
 }
 
 div button:focus {
