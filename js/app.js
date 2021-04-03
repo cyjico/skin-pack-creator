@@ -132,7 +132,7 @@ import SkinInfo from './skin-info.js';
         skinsJSON.skins.push({
           localization_name: `Skin${i + 1}`,
           geometry: 'geometry.humanoid.custom' +
-          skinInfo[i].type == 'slim' ? 'Slim' : '',
+          (skinInfo[i].getAttribute('type') === 'slim' ? 'Slim' : ''),
           texture: uploadedSkins[i].name,
           type: 'free',
         });
