@@ -1,74 +1,51 @@
 
 /**
- * Abstract class that creates skin viewers.
+ * Class that grants the ability to view skins.
  *
  * @class SkinViewer
  */
 class SkinViewer {
-  #isLowDefinition = false;
-  #isStandardDefinition = false;
-  #isHighDefinition = false;
-
   /**
    * Creates an instance of SkinViewer.
    *
-   * @param {HTMLImageElement} image
+   * @param {string} address
    * @memberof SkinViewer
    */
-  constructor(image) {
-    this.imageElement = image;
-
-    if (
-      this.imageElement.width === 64 &&
-      this.imageElement.height === 32
-    ) {
-      this.#isLowDefinition = true;
-    } else if (
-      this.imageElement.width === 64 &&
-      this.imageElement.height === 64
-    ) {
-      this.#isStandardDefinition = true;
-    } else if (
-      this.imageElement.width === 128 &&
-      this.imageElement.height === 128
-    ) {
-      this.#isHighDefinition = true;
-    } else {
-      throw new Error('Invalid skin format.');
-    }
+  constructor(address) {
+    this.address = address;
   }
 
   /**
    * Generate head for skin-viewing.
    *
+   * @param {HTMLImageElement} image
    * @param {CanvasRenderingContext2D} context
-   * @param {number} mulitplier 
-   * @param {boolean} isSlimType
+   * @param {number} resolutionFactor 
+   * @param {number} armWidth
    * @memberof SkinViewer
    */
-  #generateHead(context, multiplier, isSlimType) {
-    const sSize = 16 * multiplier;
-    const dx = (isSlimType ? 6 : 8) * multiplier;
+  #generateHead(image, context, resolutionFactor, armWidth) {
+    const sSize = 16 * resolutionFactor;
 
     context.drawImage(
-      this.imageElement,
+      image,
       sSize,
       sSize,
       sSize,
       sSize,
-      dx,
+      armWidth,
       0,
       sSize,
       sSize
     );
   
     context.drawImage(
-      this.imageElement,
-      80 * multiplier,
+      image,
+      80 * resolutionFactor,
       sSize,
       sSize,
       sSize,
-      dx,
+      armWidth,
       0,
       sSize,
       sSize
@@ -78,38 +55,38 @@ class SkinViewer {
   /**
    * Generate torso for skin-viewing.
    *
+   * @param {HTMLImageElement} image
    * @param {CanvasRenderingContext2D} context 
-   * @param {number} multiplier 
-   * @param {boolean} isSlimType
+   * @param {number} resolutionFactor 
+   * @param {number} armWidth
    * @memberof SkinViewer
    */
-  #generateTorso(context, multiplier, isSlimType) {
-    const sCoord = 40 * multiplier;
-    const sw = 16 * multiplier;
-    const sh = 24 * multiplier;
-    const dx = (isSlimType ? 6 : 8) * multiplier;
-    const dy = 16 * multiplier;
+  #generateTorso(image, context, resolutionFactor, armWidth) {
+    const sCoord = 40 * resolutionFactor;
+    const sw = 16 * resolutionFactor;
+    const sh = 24 * resolutionFactor;
+    const dy = 16 * resolutionFactor;
 
     context.drawImage(
-      this.imageElement,
+      image,
       sCoord,
       sCoord,
       sw,
       sh,
-      dx,
+      armWidth,
       dy,
       sw,
       sh
     );
 
-    const sy = 72 * multiplier;
+    const sy = 72 * resolutionFactor;
     context.drawImage(
-      this.imageElement,
+      image,
       sCoord,
       sy,
       sw,
       sh,
-      dx,
+      armWidth,
       dy,
       sw,
       sh
@@ -119,41 +96,42 @@ class SkinViewer {
   /**
    * Generate right/left arm for skin-viewing.
    *
+   * @param {HTMLImageElement} image
    * @param {CanvasRenderingContext2D} context 
-   * @param {number} multiplier 
-   * @param {boolean} isSlimType
-   * @param {boolean} isRightSide
+   * @param {number} resolutionFactor 
+   * @param {number} armWidth
+   * @param {boolean} isLowRes
+   * @param {boolean} isRight
    * @memberof SkinViewer
    */
-  #generateArm(context, multiplier, isSlimType, isRightSide) {
-    const sw = (isSlimType ? 6 : 8) * multiplier;
-    const sh = 24 * multiplier;
-    const dx = (isRightSide ? 0 : (isSlimType ? 6 : 8) + 16) * multiplier;
-    const dy = 16 * multiplier;
+  #generateArm(image, context, resolutionFactor, armWidth, isLowRes, isRight) {
+    const sh = 24 * resolutionFactor;
+    const dx = (isRight ? 0 : 16 * resolutionFactor + armWidth);
+    const dy = 16 * resolutionFactor;
 
-    isRightSide = isRightSide ? true : this.#isLowDefinition;
+    isRight = isRight || isLowRes;
 
     context.drawImage(
-      this.imageElement,
-      (isRightSide ? 88 : 72) * multiplier,
-      (isRightSide ? 40 : 104) * multiplier,
-      sw,
+      image,
+      (isRight ? 88 : 72) * resolutionFactor,
+      (isRight ? 40 : 104) * resolutionFactor,
+      armWidth,
       sh,
       dx,
       dy,
-      sw,
+      armWidth,
       sh,
     );
 
     context.drawImage(
-      this.imageElement,
-      (isRightSide ? 88 : 104) * multiplier,
-      (isRightSide ? 72 : 104) * multiplier,
-      sw,
+      image,
+      (isRight ? 88 : 104) * resolutionFactor,
+      (isRight ? 72 : 104) * resolutionFactor,
+      armWidth,
       sh,
       dx,
       dy,
-      sw,
+      armWidth,
       sh,
     );
   }
@@ -161,25 +139,27 @@ class SkinViewer {
   /**
    * Generate right/left arm for skin viewing.
    *
+   * @param {HTMLImageElement} image
    * @param {CanvasRenderingContext2D} context 
-   * @param {number} multiplier 
-   * @param {boolean} isSlimType 
-   * @param {boolean} isRightSide
+   * @param {number} resolutionFactor 
+   * @param {number} armWidth 
+   * @param {boolean} isLowRes 
+   * @param {boolean} isRight
    * 
    * @memberof SkinViewer
    */
-  #generateLeg(context, multiplier, isSlimType, isRightSide) {
-    const sw = 8 * multiplier;
-    const sh = 24 * multiplier;
-    const dx = (isSlimType ? 6 : 8) * multiplier + (isRightSide ? 0 : sw);
-    const dy = 40 * multiplier;
+  #generateLeg(image, context, resolutionFactor, armWidth, isLowRes, isRight) {
+    const sw = 8 * resolutionFactor;
+    const sh = 24 * resolutionFactor;
+    const dx = armWidth + (isRight ? 0 : sw);
+    const dy = 40 * resolutionFactor;
 
-    isRightSide = isRightSide ? true : this.#isLowDefinition;
+    isRight = isRight || isLowRes;
 
     context.drawImage(
-      this.imageElement,
-      (isRightSide ? 8 : 40) * multiplier,
-      (isRightSide ? 40 : 104) * multiplier,
+      image,
+      (isRight ? 8 : 40) * resolutionFactor,
+      (isRight ? 40 : 104) * resolutionFactor,
       sw,
       sh,
       dx,
@@ -189,9 +169,9 @@ class SkinViewer {
     );
     
     context.drawImage(
-      this.imageElement,
-      8 * multiplier,
-      (isRightSide ? 72 : 104) * multiplier,
+      image,
+      8 * resolutionFactor,
+      (isRight ? 72 : 104) * resolutionFactor,
       sw,
       sh,
       dx,
@@ -202,29 +182,49 @@ class SkinViewer {
   }
 
   /**
-   * @param {boolean} isSlimType
+   * @param {string} type
+   * @return {Promise<string>}
    * @memberof SkinViewer
    */
-  generate(isSlimType) {
-    const canvas = document.createElement('canvas');
-    const multiplier = this.#isHighDefinition ? 1 : 0.5;
-    canvas.width = ((isSlimType ? 6 : 8) * 2 + 16) * multiplier;
-    canvas.height = (16 + 24 * 2) * multiplier;
+  generate(type) {
+    const image = new Image();
+    image.src = this.address;
+
+    return new Promise((resolve, reject) => {
+      image.addEventListener('load', () => {
+        const isLowRes = image.width === 64 && image.height === 32;
+        const isHighRes = image.width === 128 && image.height === 128;
+  
+        if (!(isLowRes || (image.width === 64 && image.height === 64) || isHighRes)) {
+          throw new Error('Invalid skin format.');
+        }
+  
+        const canvas = document.createElement('canvas');
+        const resolutionFactor = isHighRes ? 1 : 0.5;
+        const armWidth = (type === 'slim' ? 6 : 8) * resolutionFactor;
+        canvas.width = 16 * resolutionFactor + armWidth * 2;
+        canvas.height = (16 + 24 * 2) * resolutionFactor;
+        
+        const context = canvas.getContext('2d');
+        context.webkitImageSmoothingEnabled = false;
+        context.mozImageSmoothingEnabled = false;
+        context.msImageSmoothingEnabled = false;
+        context.imageSmoothingEnabled = false;
     
-    const context = canvas.getContext('2d');
-    context.webkitImageSmoothingEnabled = false;
-    context.mozImageSmoothingEnabled = false;
-    context.msImageSmoothingEnabled = false;
-    context.imageSmoothingEnabled = false;
-
-    this.#generateHead(context, multiplier, isSlimType);
-    this.#generateArm(context, multiplier, isSlimType, true);
-    this.#generateArm(context, multiplier, isSlimType, false);
-    this.#generateTorso(context, multiplier, isSlimType);
-    this.#generateLeg(context, multiplier, isSlimType, true);
-    this.#generateLeg(context, multiplier, isSlimType, false);
-
-    return canvas.toDataURL();
+        this.#generateHead(image, context, resolutionFactor, armWidth);
+        this.#generateArm(image, context, resolutionFactor, armWidth, isLowRes,
+          true);
+        this.#generateArm(image, context, resolutionFactor, armWidth, isLowRes,
+          false);
+        this.#generateTorso(image, context, resolutionFactor, armWidth)
+        this.#generateLeg(image, context, resolutionFactor, armWidth, isLowRes,
+          true);
+        this.#generateLeg(image, context, resolutionFactor, armWidth, isLowRes,
+          false);
+    
+        resolve(canvas.toDataURL());
+      });
+    }) 
   }
 }
 
