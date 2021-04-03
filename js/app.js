@@ -138,7 +138,7 @@ import SkinInfo from './skin-info.js';
         });
   
         en_US += 'skin.SkinPackCreator.' +
-        skinsJSON.skins[i].localization_name + skinInfo[i].name + '\n';
+        `${skinsJSON.skins[i].localization_name}=${skinInfo[i].name}\n`;
   
         zip.file(uploadedSkins[i].name, uploadedSkins[i]);
       }
