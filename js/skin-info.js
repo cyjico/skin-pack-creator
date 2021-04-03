@@ -1,3 +1,4 @@
+import SkinViewer from './skin-viewer.js';
 
 /**
  * Information about skin
@@ -8,6 +9,9 @@
 class SkinInfo extends HTMLElement {
   /** @type {HTMLImageElement} */
   #skinElement;
+  
+  /** @type {SkinViewer} */
+  #skinViewer;
 
   /** @type {HTMLInputElement} */
   #nameElement;
@@ -25,34 +29,36 @@ class SkinInfo extends HTMLElement {
     linkElement.href = 'css/skin-info.css';
 
     this.#skinElement = document.createElement('img');
-    this.#skinElement.src = this.skin;
+    this.#skinViewer = new SkinViewer(
+      this.hasAttribute('skin') ? this.getAttribute('skin') : ''
+    );
 
     this.#nameElement = document.createElement('input');
+    if (this.hasAttribute('name')) {
+      this.#nameElement.value = this.getAttribute('name');
+    }
+    
     this.#nameElement.placeholder = 'Name';
     this.#nameElement.spellcheck = false;
-    this.#nameElement.value = this.name;
     this.#nameElement.type = 'text';
-
-    this.#nameElement.addEventListener('change', (ev) => {
-      this.setAttribute('name', ev.currentTarget.value);
-    });
+    this.#nameElement.onchange = () => {
+      this.setAttribute('name', this.#nameElement.value);
+    };
 
     this.#typeElement = document.createElement('div');
     
-    {
-      const broad = document.createElement('button');
-      broad.innerText = 'Broad';
-      this.#addTypeSelection(broad);
+    const broad = document.createElement('button');
+    broad.innerText = 'Broad';
+    this.#addTypeSelection(broad);
 
-      const slim = document.createElement('button');
-      slim.innerText = 'Slim';
-      this.#addTypeSelection(slim);
+    const slim = document.createElement('button');
+    slim.innerText = 'Slim';
+    this.#addTypeSelection(slim);
 
-      this.#typeElement.append(broad, slim);
-      
-      // Select type from attribute. (broad is default)
-      (this.type === 'slim' ? slim : broad).classList.add('type-selected');
-    }
+    this.#typeElement.append(broad, slim);
+
+    (this.getAttribute('type') === 'slim' ? slim : broad)
+    .classList.add('type-selected');
 
     shadowRoot.append(
       linkElement,
@@ -60,6 +66,44 @@ class SkinInfo extends HTMLElement {
       this.#nameElement,
       this.#typeElement,
     );
+
+    const attributeObserver = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.type === 'attributes') {
+          const attributeValue = this.getAttribute(mutation.attributeName);
+
+          switch(mutation.attributeName) {
+            case 'skin':
+              if (this.#skinViewer.address !== attributeValue) {
+                this.#skinViewer.address = attributeValue;
+                this.#skinViewer.generate(this.getAttribute('type'))
+                .then((url) => {
+                  this.#skinElement.src = url;
+                });
+              }
+              break;
+            case 'name':
+              if (this.#nameElement.value !== attributeValue) {
+                this.#nameElement.value = attributeValue;
+              }
+              break;
+            case 'type':
+              if (this.#skinViewer.address !== attributeValue) {
+                this.#skinViewer.generate(attributeValue)
+                .then((url) => {
+                  this.#skinElement.src = url;
+                });
+              }
+              break;
+          }
+        }
+      }
+    });
+
+    attributeObserver.observe(this, {
+      attributes: true,
+      attributeFilter: ['skin', 'name', 'type']
+    });
   }
 
   get skin() {
@@ -68,7 +112,6 @@ class SkinInfo extends HTMLElement {
 
   set skin(value) {
     this.setAttribute('skin', value);
-    this.#skinElement.src = value;
   }
 
   get name() {
@@ -77,11 +120,10 @@ class SkinInfo extends HTMLElement {
 
   set name(value) {
     this.setAttribute('name', value);
-    this.#nameElement.value = value;
   }
 
   get type() {
-    return this.getAttribute('type') || '';
+    return this.getAttribute('type') || 'broad';
   }
 
   set type(value) {
@@ -108,7 +150,6 @@ class SkinInfo extends HTMLElement {
   #addTypeSelection(button) {
     button.addEventListener('click', () => {
       this.setAttribute('type', button.innerText.toLowerCase());
-
       button.classList.add('type-selected');
       (button.nextElementSibling || button.previousElementSibling).classList
       .remove('type-selected');
