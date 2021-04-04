@@ -31,7 +31,7 @@ body {
 
 body > header {
   font-size: 1.5em;
-  padding: 1.5em 0 0 0;
+  padding: 1em 0 0 0;
   background-color: #2e363d;
 }
 
@@ -51,14 +51,23 @@ body > header input:focus {
   outline: none;
 }
 
-body > header h1 {
-  margin: 0;
+body > header button {
   float: right;
-  color: #b2b7bd;
-  font-size: inherit;
-  margin-right: 1.5em;
+
+  color: #2e2f31;
+  background-color: #f3f7fc;
+  border: 0.15em #42474c solid;
+
+  font-size: 0.75em;
   font-weight: normal;
-  background-color: transparent;
+
+  padding: 0.5em 1em;
+  margin-right: 1.5em;
+  margin-bottom: 1em;
+}
+
+body > header button:focus {
+  outline: none;
 }
 
 /* Main */
@@ -96,14 +105,6 @@ main footer {
   border: 0.05em #8d9696 solid;
 }
 
-#upload-skin + label, #download-skin-pack {
-  padding: 1em;
-  font-size: 1em;
-  color: #2b2b2b;
-  background-color: #f3f7fc;
-  border: 0.05em #d0d5da solid;
-}
-
 #upload-skin + label {
   display: flex;
   align-items: center;
@@ -112,10 +113,6 @@ main footer {
 
 #upload-skin {
   display: none;
-}
-
-#download-skin-pack {
-  font-family: 'Minecraft-Regular', sans-serif;
 }
 
 #download-skin-pack:focus {
@@ -148,4 +145,13 @@ body > footer img {
 
 h1, h3 {
   font-weight: normal;
+}
+
+#upload-skin + label, button {
+  padding: 1em;
+  font-size: 1em;
+  color: #2b2b2b;
+  background-color: #f3f7fc;
+  border: 0.05em #d0d5da solid;
+  font-family: 'Minecraft-Regular', sans-serif;
 }
