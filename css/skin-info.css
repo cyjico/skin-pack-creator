@@ -10,6 +10,15 @@ img {
   image-rendering: pixelated;
 }
 
+div#info-container {
+  display: grid;
+  column-gap: 1em;
+  grid-template-columns: 1fr 3fr 1fr;
+  font-size: 0.95em;
+  align-items: center;
+  justify-items: center;
+}
+
 input {
   width: 100%;
   height: 75%;
@@ -28,13 +37,13 @@ input:focus {
   outline: none;
 }
 
-div {
+div#type-container {
   width: 100%;
   height: 75%;
   display: grid;
 }
 
-div button {
+div#type-container button {
   font-size: 1.15vw;
   color: #2b2b2b;
   background-color: #f3f7fc;
@@ -42,10 +51,10 @@ div button {
   font-family: 'Minecraft-Regular', sans-serif;
 }
 
-div button:focus {
+div#type-container button:focus {
   outline: none;
 }
 
-div button.type-selected {
+div#type-container button.type-selected {
   border: 0.05vw #8d9696 solid;
 }

@@ -11,7 +11,7 @@ class SkinInfo extends HTMLElement {
   #nameElement;
 
   /** @type {HTMLDivElement} */
-  #typeElement;
+  #typeContainer;
 
   /** @type {HTMLImageElement} */
   #skinElement;
@@ -25,6 +25,9 @@ class SkinInfo extends HTMLElement {
     linkElement.rel = 'stylesheet';
     linkElement.href = 'css/skin-info.css';
 
+    const infoContainer = document.createElement('div');
+    infoContainer.id = 'info-container';
+
     // #nameElement
     this.#nameElement = document.createElement('input');
     this.#nameElement.value = this.getAttribute('name') || '';
@@ -36,8 +39,9 @@ class SkinInfo extends HTMLElement {
       this.setAttribute('name', this.#nameElement.value);
     });
 
-    // #typeElement
-    this.#typeElement = document.createElement('div');
+    // #typeContainer
+    this.#typeContainer = document.createElement('div');
+    this.#typeContainer.id = 'type-container';
     
     {
       const broad = document.createElement('button');
@@ -51,7 +55,7 @@ class SkinInfo extends HTMLElement {
       (this.getAttribute('type') === 'slim' ? slim : broad)
       .classList.add('type-selected');
 
-      this.#typeElement.append(broad, slim);
+      this.#typeContainer.append(broad, slim);
     }
 
     // #skinElement
@@ -59,11 +63,15 @@ class SkinInfo extends HTMLElement {
     if (this.hasAttribute('skin'))
       this.#updateSkinElement();
 
-    shadowRoot.append(
-      linkElement,
+    infoContainer.append(
       this.#skinElement,
       this.#nameElement,
-      this.#typeElement,
+      this.#typeContainer,
+    );
+
+    shadowRoot.append(
+      linkElement,
+      infoContainer,
     );
   }
 
@@ -91,10 +99,10 @@ class SkinInfo extends HTMLElement {
   set type(value) {
     switch (value) {
       case 'broad':
-        this.#typeElement.firstElementChild.click();
+        this.#typeContainer.firstElementChild.click();
         break;
       case 'slim':
-        this.#typeElement.lastElementChild.click();
+        this.#typeContainer.lastElementChild.click();
         break;
       default:
         return;
