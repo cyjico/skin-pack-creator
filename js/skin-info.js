@@ -13,8 +13,8 @@ class SkinInfo extends HTMLElement {
   /** @type {HTMLDivElement} */
   #typeContainer;
 
-  /** @type {HTMLImageElement} */
-  #skinElement;
+  /** @type {HTMLDivElement} */
+  #skinContainer;
 
   constructor() {
     super();
@@ -25,11 +25,13 @@ class SkinInfo extends HTMLElement {
     linkElement.rel = 'stylesheet';
     linkElement.href = 'css/skin-info.css';
 
+    // #info-container
     const infoContainer = document.createElement('div');
     infoContainer.id = 'info-container';
 
-    // #nameElement
+    // #name-element
     this.#nameElement = document.createElement('input');
+    this.#nameElement.id = 'name-element'
     this.#nameElement.value = this.getAttribute('name') || '';
     
     this.#nameElement.placeholder = 'Name';
@@ -39,7 +41,7 @@ class SkinInfo extends HTMLElement {
       this.setAttribute('name', this.#nameElement.value);
     });
 
-    // #typeContainer
+    // #type-container
     this.#typeContainer = document.createElement('div');
     this.#typeContainer.id = 'type-container';
     
@@ -58,13 +60,31 @@ class SkinInfo extends HTMLElement {
       this.#typeContainer.append(broad, slim);
     }
 
-    // #skinElement
-    this.#skinElement = document.createElement('img');
-    if (this.hasAttribute('skin'))
-      this.#updateSkinElement();
+    // #skin-container
+    this.#skinContainer = document.createElement('div');
+    this.#skinContainer.id = 'skin-container';
+
+    {
+      const skinElement = document.createElement('img');
+
+      const skinRemover = document.createElement('button');
+      skinRemover.innerText = 'Remove';
+      skinRemover.addEventListener('click', () => {
+        this.parentElement.removeChild(this);
+      })
+
+      this.#skinContainer.append(
+        skinElement,
+        skinRemover,
+      );
+
+      if (this.hasAttribute('skin')) {
+        this.#updateSkinContainer();
+      }
+    }
 
     infoContainer.append(
-      this.#skinElement,
+      this.#skinContainer,
       this.#nameElement,
       this.#typeContainer,
     );
@@ -81,7 +101,7 @@ class SkinInfo extends HTMLElement {
 
   set skin(value) {
     this.setAttribute('skin', value);
-    this.#updateSkinElement();
+    this.#updateSkinContainer();
   }
 
   get name() {
@@ -124,7 +144,7 @@ class SkinInfo extends HTMLElement {
       (button.nextElementSibling || button.previousElementSibling).classList
       .remove('type-selected');
 
-      this.#updateSkinElement();
+      this.#updateSkinContainer();
     });
   }
 
@@ -134,13 +154,13 @@ class SkinInfo extends HTMLElement {
    * @ignore
    * @memberof SkinInfo
    */
-  #updateSkinElement() {
+  #updateSkinContainer() {
     SkinViewer.generate(
       this.getAttribute('skin'),
       this.getAttribute('type'),
     )
     .then((url) => {
-      this.#skinElement.src = url;
+      this.#skinContainer.firstChild.src = url;
     })
     .catch((reason) => {
       throw reason;
