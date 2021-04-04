@@ -176,7 +176,7 @@ class SkinViewer {
           resized24,
           armWidth,
           resized16,
-          resized24,
+          resized16,
           resized24
         );
 
