@@ -6,6 +6,7 @@ import SkinInfo from './skin-info.js';
 
   const uploadListener = (function() {
     const mainElement = document.getElementsByTagName('main')[0];
+    const footerElement = document.getElementsByTagName('footer')[0];
     const uploadElement = document.getElementById('upload-skin');
 
     return () => {
@@ -13,9 +14,13 @@ import SkinInfo from './skin-info.js';
         uploadedSkins.push(uploadElement.files[i]);
 
         /** @type {SkinInfo}  */
-        const element = document.createElement('skin-info');
-        element.skin = URL.createObjectURL(uploadElement.files[i]);
-        mainElement.append(element);
+        const skinInfoElement = document.createElement('skin-info');
+        skinInfoElement.skin = URL.createObjectURL(uploadElement.files[i]);
+        
+        mainElement.insertBefore(
+          skinInfoElement,
+          footerElement,
+        );
       }
     }
   })();

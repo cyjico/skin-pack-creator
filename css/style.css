@@ -29,13 +29,13 @@ body {
 
 /* Header */
 
-header {
-  font-size: 2vw;
+body > header {
+  font-size: 1.5em;
   padding: 1.5em 0 0 0;
   background-color: #2e363d;
 }
 
-header input {
+body > header input {
   float: left;
   border: none;
   color: inherit;
@@ -46,12 +46,12 @@ header input {
   font-family: 'Minecraft-Regular', sans-serif;
 }
 
-header input:focus {
+body > header input:focus {
   border: none;
   outline: none;
 }
 
-header h1 {
+body > header h1 {
   margin: 0;
   float: right;
   color: #b2b7bd;
@@ -64,42 +64,50 @@ header h1 {
 /* Main */
 
 main {
-  margin: 1vw;
+  margin: 1em;
 
   display: grid;
-  row-gap: 0.5vw;
+  row-gap: 1.5em;
 }
 
+main header * {
+  margin: 0;
+}
 
-main > * {
+main header {
   display: grid;
   column-gap: 1em;
   grid-template-columns: 1fr 3fr 1fr;
   
-  font-size: 1.25vw;
+  font-size: 0.95em;
   align-items: center;
   justify-items: center;
 }
 
-/* Top Footer */
+/* Main Footer */
 
-#top-footer {
+main footer {
   display: grid;
+  column-gap: 1em;
   grid-template-columns: repeat(2, 1fr);
 }
 
 #upload-skin + label:active, #download-skin-pack:active {
-  border: 0.05vw #8d9696 solid;
+  border: 0.05em #8d9696 solid;
+}
+
+#upload-skin + label, #download-skin-pack {
+  padding: 1em;
+  font-size: 1em;
+  color: #2b2b2b;
+  background-color: #f3f7fc;
+  border: 0.05em #d0d5da solid;
 }
 
 #upload-skin + label {
-  margin: 1em;
   display: flex;
-  padding: 1em;
-  font-size: 1.25vw;
   align-items: center;
   justify-content: center;
-  border: 0.05vw #d0d5da solid;
 }
 
 #upload-skin {
@@ -107,12 +115,6 @@ main > * {
 }
 
 #download-skin-pack {
-  margin: 1em;
-  padding: 1em;
-  font-size: 1.25vw;
-  color: #2b2b2b;
-  background-color: #f3f7fc;
-  border: 0.05vw #d0d5da solid;
   font-family: 'Minecraft-Regular', sans-serif;
 }
 
@@ -120,25 +122,25 @@ main > * {
   outline: none;
 }
 
-/* Bottom Footer */
+/* Footer */
 
-#bottom-footer {
+body > footer {
   display: flex;
   margin-top: auto;
   align-items: center;
   justify-content: center;
 }
 
-#bottom-footer p {
-  font-size: 1.175vw;
+body > footer p {
+  font-size: 1rem;
   display: inline-block;
 }
 
-#bottom-footer img {
-  height: 1.25em;
-  font-size: 1.175vw;
-  vertical-align: text-top;
-  margin: 0 0.25em 0 0.25em;
+body > footer img {
+  top: -0.25em;
+  height: 1.25rem;
+  position: relative;
+  margin: 0 0.5rem 0 0.5rem;
   image-rendering: pixelated;
 }
 

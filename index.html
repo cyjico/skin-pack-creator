@@ -1,5 +1,7 @@
 <html>
   <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Skin Pack Creator</title>
     <link rel="icon" type="image/png" href="favicon.ico">
     <link rel="stylesheet" type="text/css" href="css/style.css">
@@ -11,20 +13,19 @@
     </header>
 
     <main>
-      <section>
+      <header>
         <h3>Skin</h3>
         <h3>Skin Name</h3>
         <h3>Skin Type</h3>
-      </section>
+      </header>
+      <footer>
+        <input id='upload-skin' type="file" accept="image/*" multiple/>
+        <label for='upload-skin'>Upload Skin</label>
+        <button id='download-skin-pack'>Download Skin Pack</button>
+      </footer>
     </main>
 
-    <footer id="top-footer">
-      <input id='upload-skin' type="file" accept="image/*" multiple/>
-      <label for='upload-skin'>Upload Skin</label>
-      <button id='download-skin-pack'>Download Skin Pack</button>
-    </footer>
-
-    <footer id="bottom-footer">
+    <footer>
       <p>Made by</p>
       <img src="favicon.ico" class="icon-profile"/>
       <p>notavail</p>
