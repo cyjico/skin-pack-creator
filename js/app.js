@@ -22,6 +22,8 @@ import SkinInfo from './skin-info.js';
           footerElement,
         );
       }
+      
+      uploadElement.value = null;
     }
   })();
   
