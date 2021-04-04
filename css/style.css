@@ -51,12 +51,16 @@ body > header input:focus {
   outline: none;
 }
 
-body > header button {
+body > header #import-skinpack {
+  display: none;
+}
+
+body > header #import-skinpack + label {
   float: right;
 
-  color: #2e2f31;
-  background-color: #f3f7fc;
-  border: 0.15em #42474c solid;
+  color: #f3f7fc;
+  background-color: #42474c;
+  border: 0.15em #2e2f31 solid;
 
   font-size: 0.75em;
   font-weight: normal;
@@ -64,10 +68,6 @@ body > header button {
   padding: 0.5em 1em;
   margin-right: 1.5em;
   margin-bottom: 1em;
-}
-
-body > header button:focus {
-  outline: none;
 }
 
 /* Main */
