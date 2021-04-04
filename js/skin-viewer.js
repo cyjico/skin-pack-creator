@@ -1,6 +1,6 @@
 
 /**
- * Generate right/left arm for skin-viewing.
+ * Generate the front-view of the right/left arm.
  *
  * @ignore
  * @param {HTMLImageElement} image
@@ -43,7 +43,7 @@ function generateArm(image, context, resolutionFactor, armWidth, isLowRes, isRig
 }
 
 /**
- * Generate right/left arm for skin viewing.
+ * Generate the front-view of the right/left leg.
  *
  * @ignore
  * @param {HTMLImageElement} image
@@ -87,14 +87,15 @@ function generateLeg(image, context, resolutionFactor, armWidth, isLowRes, isRig
 }
 
 /**
- * Static class that generates the front-view of a Minecraft skin.
+ * Generates the front-view of a Minecraft skin.
  *
  * @static
  * @class SkinViewer
  */
 class SkinViewer {
-  
   /**
+   * Generates the front-view of a Minecraft skin.
+   *
    * @static
    * @param {string} address
    * @param {string} type
@@ -130,7 +131,7 @@ class SkinViewer {
         context.msImageSmoothingEnabled = false;
         context.imageSmoothingEnabled = false;
 
-        // Head
+        // Front-view of head
         context.drawImage(
           image,
           resized16,
@@ -155,7 +156,7 @@ class SkinViewer {
           resized16,
         );
         
-        // Torso
+        // Front-view of torso
         context.drawImage(
           image,
           resized40,
