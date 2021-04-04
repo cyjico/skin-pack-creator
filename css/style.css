@@ -67,7 +67,7 @@ main {
   margin: 1vw;
 
   display: grid;
-  row-gap: 1em;
+  row-gap: 0.5vw;
 }
 
 
