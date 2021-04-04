@@ -1,24 +1,135 @@
 import SkinInfo from './skin-info.js';
 
+/**
+ * @typedef ManifestJSON File that describes the skin pack.
+ * @property {number} format_version
+ * @property {object} header
+ * @property {string} header.name
+ * @property {string} header.uuid
+ * @property {[1, 1, 0]} header.version
+ * @property {{
+ *   type: 'skin_pack',
+ *   uuid: string,
+ *   version: [ 1, 1, 0 ]
+ * }} modules
+ */
+
+/**
+ * @typedef SkinsJSON File that describes each skin of the skin pack.
+ * @property {'skinpacks/skins.json'} geometry
+ * @property {Object[]} skins
+ * @property {string} skins[].localization_name
+ * @property {'geometry.humanoid.customSlim'|
+ * 'geometry.humanoid.custom'} skins[].geometry
+ * @property {string} skins[].texture
+ * @property {'free'} skins[].type
+ * @property {string} serialize_name
+ * @property {string} localization_name
+ */
+
+/** @type {{parse: (file: string) => {skinpack: string, skins: string[]}}} */
+const LANG = {
+  /**
+   * Converts a Minecraft .lang file into a JavaScript Object.
+   *
+   * @param {string} file 
+   * @return {{skinpack: string, skins: string[]}}
+   */
+  parse(file) {
+    /** @type {{skinpack: string, skins: string[]}} */
+    const result = {skinpack: '', skins: []};
+
+    file.split('\n').forEach((value) => {
+      if (value.length <= 0) {
+        return;
+      }
+
+      const indexOfEqualSign = value.indexOf('=') + 1;
+      if (indexOfEqualSign <= 0) {
+        return;
+      }
+
+      const definition = value.substring(indexOfEqualSign).trim();
+
+      if (value.startsWith('skinpack', 0)) {
+        result.skinpack = definition;
+      } else if (value.startsWith('skin', 0)) {
+        result.skins.push(definition);
+      }
+    });
+
+    return result;
+  },
+};
+
 (function() {
   /** @type {File[]} */
   const uploadedSkins = [];
+  
+  /** @type {HTMLInputElement} */
+  const importElement = document.getElementById('import-skinpack');
+  /** @type {HTMLInputElement} */
+  const headerInputElement = document.querySelector('header > input');
+  const mainElement = document.getElementsByTagName('main')[0];
+  const footerElement = document.getElementsByTagName('footer')[0];
+  /** @type {HTMLInputElement} */
+  const uploadElement = document.getElementById('upload-skin');
+
+  // Event Listener
+
+  const importListener = (function() {
+    return () => {
+      const zip = new JSZip();
+
+      zip.loadAsync(importElement.files[0])
+      .then((contents) => {
+        importElement.value = null;
+
+        return Promise.all([
+          contents.files['skins.json'].async('string'),
+          contents.files['texts/en_US.lang'].async('string'),
+          contents.files
+        ]);
+      })
+      .then((values) => {
+        const skins = JSON.parse(values[0]).skins;
+        const en_US = LANG.parse(values[1]);
+
+        headerInputElement.value = en_US.skinpack;
+
+        for (let i = 0; i < skins.length; i++) {
+          const filePath = skins[i].texture;
+
+          values[2][filePath].async('blob')
+          .then((blob) => {
+            /** @type {SkinInfo} */
+            const element = document.createElement('skin-info');
+            element.skin = URL.createObjectURL(blob);
+            element.type = (
+              skins[i].geometry == 'geometry.humanoid.custom' ?
+              'broad' : 'slim'
+            );
+            element.name = en_US.skins[i];
+
+            uploadedSkins.push(new File([blob], filePath));
+            mainElement.insertBefore(element, footerElement);
+          });
+        }
+      });
+    };
+  })();
 
   const uploadListener = (function() {
-    const mainElement = document.getElementsByTagName('main')[0];
-    const footerElement = document.getElementsByTagName('footer')[0];
-    const uploadElement = document.getElementById('upload-skin');
-
     return () => {
       for (let i = 0; i < uploadElement.files.length; i++) {
         uploadedSkins.push(uploadElement.files[i]);
 
         /** @type {SkinInfo}  */
-        const skinInfoElement = document.createElement('skin-info');
-        skinInfoElement.skin = URL.createObjectURL(uploadElement.files[i]);
+        const element = document.createElement('skin-info');
+        element.skin = URL.createObjectURL(uploadElement.files[i]);
         
         mainElement.insertBefore(
-          skinInfoElement,
+          element,
           footerElement,
         );
       }
@@ -50,25 +161,7 @@ import SkinInfo from './skin-info.js';
   
       const zip = new JSZip();
       
-      /**
-       * File that describes the skin pack.
-       *
-       * @type {{
-       *   format_version: number,
-       *   header: {
-       *     name: string,
-       *     uuid: string,
-       *     version: [ 1, 1, 0 ]
-       *   },
-       *   modules: [
-       *     {
-       *       type: 'skin_pack',
-       *       uuid: string,
-       *       version: [ 1, 1, 0 ]
-       *     }
-       *   ]
-       * }}
-       */
+      /** @type {ManifestJSON} */
       const manifestJSON = {
         format_version: 1,
         header: {
@@ -98,21 +191,7 @@ import SkinInfo from './skin-info.js';
         return;
       }
   
-      /**
-       * File that describes each skin of the skin pack.
-       * 
-       * @type {{
-       *   geometry: 'skinpacks/skins.json',
-       *   skins: {
-       *     localization_name: string,
-       *     geometry: string,
-       *     texture: string,
-       *     type: 'free'
-       *   }[],
-       *   serialize_name: string,
-       *   localization_name: string,
-       * }}
-       */
+      /** @type {SkinsJSON} */
       const skinsJSON = {
         geometry: 'skinpacks/skins.json',
         skins: [],
@@ -163,6 +242,13 @@ import SkinInfo from './skin-info.js';
       });
     }
   })();
+
+  // Event Binding
+
+  document.getElementById('import-skinpack').addEventListener(
+    'change',
+    importListener,
+  );
 
   document.getElementById('upload-skin').addEventListener(
     'change',
