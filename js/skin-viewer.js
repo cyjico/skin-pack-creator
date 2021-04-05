@@ -1,18 +1,24 @@
-
 /**
  * Generate the front-view of the right/left arm.
  *
  * @ignore
  * @param {HTMLImageElement} image
- * @param {CanvasRenderingContext2D} context 
- * @param {number} resolutionFactor 
+ * @param {CanvasRenderingContext2D} context
+ * @param {number} resolutionFactor
  * @param {number} armWidth
  * @param {boolean} isLowRes
  * @param {boolean} isRight
  */
-function generateArm(image, context, resolutionFactor, armWidth, isLowRes, isRight) {
+function generateArm(
+  image,
+  context,
+  resolutionFactor,
+  armWidth,
+  isLowRes,
+  isRight,
+) {
   const sh = 24 * resolutionFactor;
-  const dx = (isRight ? 0 : 16 * resolutionFactor + armWidth);
+  const dx = isRight ? 0 : 16 * resolutionFactor + armWidth;
   const dy = 16 * resolutionFactor;
 
   isRight = isRight || isLowRes;
@@ -47,13 +53,20 @@ function generateArm(image, context, resolutionFactor, armWidth, isLowRes, isRig
  *
  * @ignore
  * @param {HTMLImageElement} image
- * @param {CanvasRenderingContext2D} context 
- * @param {number} resolutionFactor 
- * @param {number} armWidth 
- * @param {boolean} isLowRes 
+ * @param {CanvasRenderingContext2D} context
+ * @param {number} resolutionFactor
+ * @param {number} armWidth
+ * @param {boolean} isLowRes
  * @param {boolean} isRight
  */
-function generateLeg(image, context, resolutionFactor, armWidth, isLowRes, isRight) {
+function generateLeg(
+  image,
+  context,
+  resolutionFactor,
+  armWidth,
+  isLowRes,
+  isRight,
+) {
   const sw = 8 * resolutionFactor;
   const sh = 24 * resolutionFactor;
   const dx = armWidth + (isRight ? 0 : sw);
@@ -70,9 +83,9 @@ function generateLeg(image, context, resolutionFactor, armWidth, isLowRes, isRig
     dx,
     dy,
     sw,
-    sh
+    sh,
   );
-  
+
   context.drawImage(
     image,
     8 * resolutionFactor,
@@ -82,7 +95,7 @@ function generateLeg(image, context, resolutionFactor, armWidth, isLowRes, isRig
     dx,
     dy,
     sw,
-    sh
+    sh,
   );
 }
 
@@ -107,25 +120,31 @@ class SkinViewer {
     image.src = address;
 
     return new Promise((resolve, reject) => {
-      image.addEventListener('load', () => {
+      image.addEventListener("load", () => {
         const isLowRes = image.width === 64 && image.height === 32;
         const isHighRes = image.width === 128 && image.height === 128;
-  
-        if (!(isLowRes || (image.width === 64 && image.height === 64) || isHighRes)) {
-          reject(new Error('Invalid skin format.'));
+
+        if (
+          !(
+            isLowRes ||
+            (image.width === 64 && image.height === 64) ||
+            isHighRes
+          )
+        ) {
+          reject(new Error("Invalid skin format."));
         }
-  
-        const canvas = document.createElement('canvas');
+
+        const canvas = document.createElement("canvas");
         const resolutionFactor = isHighRes ? 1 : 0.5;
-        const armWidth = (type === 'slim' ? 6 : 8) * resolutionFactor;
+        const armWidth = (type === "slim" ? 6 : 8) * resolutionFactor;
         const resized40 = 40 * resolutionFactor;
         const resized24 = 24 * resolutionFactor;
         const resized16 = 16 * resolutionFactor;
 
         canvas.width = resized16 + armWidth * 2;
-        canvas.height = (24 * 2) * resolutionFactor + resized16;
-        
-        const context = canvas.getContext('2d');
+        canvas.height = 24 * 2 * resolutionFactor + resized16;
+
+        const context = canvas.getContext("2d");
         context.webkitImageSmoothingEnabled = false;
         context.mozImageSmoothingEnabled = false;
         context.msImageSmoothingEnabled = false;
@@ -143,7 +162,7 @@ class SkinViewer {
           resized16,
           resized16,
         );
-      
+
         context.drawImage(
           image,
           80 * resolutionFactor,
@@ -155,7 +174,7 @@ class SkinViewer {
           resized16,
           resized16,
         );
-        
+
         // Front-view of torso
         context.drawImage(
           image,
@@ -166,9 +185,9 @@ class SkinViewer {
           armWidth,
           resized16,
           resized16,
-          resized24
+          resized24,
         );
-      
+
         context.drawImage(
           image,
           resized40,
@@ -178,17 +197,10 @@ class SkinViewer {
           armWidth,
           resized16,
           resized16,
-          resized24
+          resized24,
         );
 
-        generateArm(
-          image,
-          context,
-          resolutionFactor,
-          armWidth,
-          isLowRes,
-          true,
-        );
+        generateArm(image, context, resolutionFactor, armWidth, isLowRes, true);
 
         generateArm(
           image,
@@ -199,14 +211,7 @@ class SkinViewer {
           false,
         );
 
-        generateLeg(
-          image,
-          context,
-          resolutionFactor,
-          armWidth,
-          isLowRes,
-          true,
-        );
+        generateLeg(image, context, resolutionFactor, armWidth, isLowRes, true);
 
         generateLeg(
           image,
@@ -216,10 +221,10 @@ class SkinViewer {
           isLowRes,
           false,
         );
-    
+
         resolve(canvas.toDataURL());
       });
-    }) 
+    });
   }
 }
 
