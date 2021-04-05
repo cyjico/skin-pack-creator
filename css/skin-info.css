@@ -1,4 +1,3 @@
-
 /* #skin-container */
 .skin-container {
   display: grid;
@@ -24,7 +23,7 @@
   font-size: 1.35em;
   background-color: #f3f7fc;
   border: 0.05em #d0d5da solid;
-  font-family: 'Minecraft-Regular', sans-serif;
+  font-family: "Minecraft-Regular", sans-serif;
 }
 
 .name-element:focus {
