@@ -1,7 +1,8 @@
-import LANG from './lang.js';
-import SkinInfo from './skin-info.js';
+import LANG from "./lang.js";
+import SkinInfo from "./skin-info.js";
 
 /**
+ * @ignore
  * @typedef ManifestJSON File that describes the skin pack.
  * @property {number} format_version
  * @property {object} header
@@ -16,6 +17,7 @@ import SkinInfo from './skin-info.js';
  */
 
 /**
+ * @ignore
  * @typedef SkinsJSON File that describes each skin of the skin pack.
  * @property {'skinpacks/skins.json'} geometry
  * @property {Object[]} skins
@@ -31,17 +33,24 @@ import SkinInfo from './skin-info.js';
 /**
  * Generates a universally unique identifier using `Crypto` or `Math.random()`.
  *
- * @return {string} 
+ * @return {string}
  */
 function generateUUID() {
   if (!crypto) {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+      /[xy]/g,
+      function (c) {
+        var r = (Math.random() * 16) | 0,
+          v = c == "x" ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+      },
+    );
   } else {
-    return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
-      (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+    return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
+      (
+        c ^
+        (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
+      ).toString(16),
     );
   }
 }
@@ -54,7 +63,7 @@ class SkinPack {
 
   /**
    * Creates an instance of SkinPack.
-   * 
+   *
    * @param {HTMLInputElement} nameElement
    * @memberof SkinPack
    */
@@ -74,7 +83,7 @@ class SkinPack {
    * Retrieves information about a skin in the specified index.
    *
    * @param {number} index
-   * @return {SkinInfo} 
+   * @return {SkinInfo}
    * @memberof SkinPack
    */
   get_skin(index) {
@@ -97,7 +106,7 @@ class SkinPack {
     const index = this.#skins.length;
     this.#skins.push([file, info]);
 
-    info.elements[0].lastElementChild.addEventListener('click', () => {
+    info.elements[0].lastElementChild.addEventListener("click", () => {
       this.#skins.splice(index, 1);
     });
 
@@ -107,14 +116,14 @@ class SkinPack {
   /**
    * Asynchronously downloads the skin pack as a `.mcpack` file.
    *
-   * @return {Promise<Blob>} 
+   * @return {Promise<Blob|Error>}
    * @memberof SkinPack
    */
   async download() {
     if (this.#skins.length == 0) {
-      return Promise.reject('No skins present in the skin pack.');
+      return Promise.reject(new Error("No skins present in the skin pack."));
     } else if (this.#nameElement.value.length === 0) {
-      return Promise.reject('Skin pack has no name.');
+      return Promise.reject(new Error("Skin pack has no name."));
     }
 
     const zip = new JSZip();
@@ -123,33 +132,25 @@ class SkinPack {
     const manifest = {
       format_version: 1,
       header: {
-          name: this.#nameElement.value,
-          uuid: generateUUID(),
-          version: [
-              1,
-              1,
-              0
-          ]
+        name: this.#nameElement.value,
+        uuid: generateUUID(),
+        version: [1, 1, 0],
       },
       modules: [
-          {
-              type: 'skin_pack',
-              uuid: generateUUID(),
-              version: [
-                  1,
-                  1,
-                  0
-              ]
-          }
-      ]
+        {
+          type: "skin_pack",
+          uuid: generateUUID(),
+          version: [1, 1, 0],
+        },
+      ],
     };
 
     /** @type {SkinsJSON} */
     const skins = {
-      geometry: 'skinpacks/skins.json',
+      geometry: "skinpacks/skins.json",
       skins: [],
-      serialize_name: 'SkinPackCreator',
-      localization_name: 'SkinPackCreator'
+      serialize_name: "SkinPackCreator",
+      localization_name: "SkinPackCreator",
     };
 
     /** @type {string} */
@@ -162,31 +163,33 @@ class SkinPack {
 
       skins.skins.push({
         localization_name: `Skin${i + 1}`,
-        geometry: 'geometry.humanoid.custom' +
-        (this.#skins[i][1].type === 'slim' ? 'Slim' : ''),
+        geometry:
+          "geometry.humanoid.custom" +
+          (this.#skins[i][1].type === "slim" ? "Slim" : ""),
         texture: this.#skins[i][0].name,
-        type: 'free',
+        type: "free",
       });
 
-      en_US += 'skin.SkinPackCreator.' +
-      `${skins.skins[i].localization_name}=${this.#skins[i][1].name}\n`;
+      en_US +=
+        "skin.SkinPackCreator." +
+        `${skins.skins[i].localization_name}=${this.#skins[i][1].name}\n`;
 
       // Save image.
       zip.file(this.#skins[i][0].name, this.#skins[i][0]);
     }
 
     return await zip
-    .file('manifest.json', JSON.stringify(manifest))
-    .file('skins.json', JSON.stringify(skins))
-    .file('texts/en_US.lang', en_US)
-    .generateAsync({
-      type: 'blob',
-      mimeType: 'application/octet-stream',
-    })
-    .then((content) => {
-      saveAs(content, `${manifest.header.name}.mcpack`);
-      return content;
-    });
+      .file("manifest.json", JSON.stringify(manifest))
+      .file("skins.json", JSON.stringify(skins))
+      .file("texts/en_US.lang", en_US)
+      .generateAsync({
+        type: "blob",
+        mimeType: "application/octet-stream",
+      })
+      .then((content) => {
+        saveAs(content, `${manifest.header.name}.mcpack`);
+        return content;
+      });
   }
 
   /**
@@ -206,11 +209,10 @@ class SkinPack {
 
     const contents = await zip.loadAsync(file);
 
-    const skins = JSON.parse(
-      await contents.files['skins.json'].async('string')
-    ).skins;
+    const skins = JSON.parse(await contents.files["skins.json"].async("string"))
+      .skins;
     const en_US = LANG.parse(
-      await contents.files['texts/en_US.lang'].async('string')
+      await contents.files["texts/en_US.lang"].async("string"),
     );
 
     for (let i = 0; i < skins.length; i++) {
@@ -218,14 +220,14 @@ class SkinPack {
         continue;
       }
 
-      const blob = await contents.files[skins[i].texture].async('blob');
+      const blob = await contents.files[skins[i].texture].async("blob");
       const skinInfo = new SkinInfo(
         URL.createObjectURL(blob),
         en_US.skins[i],
-        skins[i].geometry == 'geometry.humanoid.custom' ? 'broad' : 'slim',
+        skins[i].geometry == "geometry.humanoid.custom" ? "broad" : "slim",
       );
 
-      skinInfo.elements[0].firstElementChild.addEventListener('load', () => {
+      skinInfo.elements[0].firstElementChild.addEventListener("load", () => {
         callback(this.upload(new File([blob], skins[i].texture), skinInfo));
       });
     }
