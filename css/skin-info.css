@@ -1,44 +1,24 @@
 
-@font-face {
-  font-family: 'Minecraft-Regular';
-  src: url('fonts/Minecraft/Minecraft-Regular.ttf') format('truetype');
-}
-
-/* info-container */
-
-div#info-container {
-  position: relative;
-  display: grid;
-  gap: 1em;
-  grid-template-columns: 1fr 3fr 1fr;
-
-  font-size: 0.95em;
-  align-items: center;
-  justify-items: center;
-}
-
 /* #skin-container */
-
-#skin-container {
+.skin-container {
   display: grid;
   row-gap: 0.25em;
 }
 
-#skin-container img {
+.skin-container img {
   width: auto;
   height: 8em;
   margin: auto;
   image-rendering: pixelated;
 }
 
-#skin-container button {
+.skin-container button {
   padding: 0.5em;
   text-align: center;
 }
 
 /* #name-element */
-
-#name-element {
+.name-element {
   width: 100%;
   padding: 1em;
   font-size: 1.35em;
@@ -47,32 +27,16 @@ div#info-container {
   font-family: 'Minecraft-Regular', sans-serif;
 }
 
-#name-element:focus {
+.name-element:focus {
   outline: none;
 }
 
 /* #type-container */
-
-#type-container {
+.type-container {
   width: 100%;
   display: grid;
 }
 
-#type-container button.type-selected {
+.type-container button.type-selected {
   border: 0.05em #8d9696 solid;
-}
-
-/* Global Queries */
-
-button {
-  padding: 1em;
-  font-size: 1em;
-  color: #2b2b2b;
-  background-color: #f3f7fc;
-  border: 0.05em #d0d5da solid;
-  font-family: 'Minecraft-Regular', sans-serif;
-}
-
-button:focus {
-  outline: none;
 }

@@ -4,65 +4,34 @@ import SkinViewer from './skin-viewer.js';
  * Information about the Minecraft skin.
  *
  * @class SkinInfo
- * @extends {HTMLElement}
  */
-class SkinInfo extends HTMLElement {
+class SkinInfo {
+  /** @type {HTMLDivElement} */
+  #skinContainer;
+  /** @type {string} */
+  #skin;
+
   /** @type {HTMLInputElement} */
   #nameElement;
 
   /** @type {HTMLDivElement} */
   #typeContainer;
 
-  /** @type {HTMLDivElement} */
-  #skinContainer;
-
-  constructor() {
-    super();
-
-    const shadowRoot = this.attachShadow({mode: 'closed'});
-
-    const linkElement = document.createElement('link');
-    linkElement.rel = 'stylesheet';
-    linkElement.href = 'css/skin-info.css';
-
-    // #info-container
-    const infoContainer = document.createElement('div');
-    infoContainer.id = 'info-container';
-
-    // #name-element
-    this.#nameElement = document.createElement('input');
-    this.#nameElement.id = 'name-element'
-    this.#nameElement.value = this.getAttribute('name') || '';
-    
-    this.#nameElement.placeholder = 'Name';
-    this.#nameElement.spellcheck = false;
-    this.#nameElement.type = 'text';
-    this.#nameElement.addEventListener('change', () => {
-      this.setAttribute('name', this.#nameElement.value);
-    });
-
-    // #type-container
-    this.#typeContainer = document.createElement('div');
-    this.#typeContainer.id = 'type-container';
-    
-    {
-      const broad = document.createElement('button');
-      broad.innerText = 'Broad';
-      this.#addTypeSelection(broad);
-
-      const slim = document.createElement('button');
-      slim.innerText = 'Slim';
-      this.#addTypeSelection(slim);
-
-      (this.getAttribute('type') === 'slim' ? slim : broad)
-      .classList.add('type-selected');
-
-      this.#typeContainer.append(broad, slim);
-    }
-
-    // #skin-container
+  /**
+   * Creates an instance of SkinInfo.
+   *
+   * @param {string} skin
+   * @param {string} [name='']
+   * @param {string} [type='broad']
+   * @memberof SkinInfo
+   */
+  constructor(skin, name='', type='broad') {
+    // skin-container
     this.#skinContainer = document.createElement('div');
-    this.#skinContainer.id = 'skin-container';
+    this.#skinContainer.classList.add('skin-container');
+    this.#skinContainer.value = skin;
+
+    this.#skin = skin;
 
     {
       const skinElement = document.createElement('img');
@@ -70,42 +39,67 @@ class SkinInfo extends HTMLElement {
       const skinRemover = document.createElement('button');
       skinRemover.innerText = 'Remove';
       skinRemover.addEventListener('click', () => {
-        this.parentElement.removeChild(this);
-      })
+        this.#skinContainer.remove();
+        this.#nameElement.remove();
+        this.#typeContainer.remove();
+      });
 
-      this.#skinContainer.append(
-        skinElement,
-        skinRemover,
-      );
-
-      if (this.hasAttribute('skin')) {
-        this.#updateSkinContainer();
-      }
+      this.#skinContainer.append(skinElement, skinRemover);
     }
 
-    infoContainer.append(
-      this.#skinContainer,
-      this.#nameElement,
-      this.#typeContainer,
-    );
+    // name-element
+    this.#nameElement = document.createElement('input');
+    this.#nameElement.placeholder = 'Name';
+    this.#nameElement.classList.add('name-element');
+    this.#nameElement.spellcheck = false;
+    this.#nameElement.type = 'text';
+    this.#nameElement.value = name;
 
-    shadowRoot.append(
-      linkElement,
-      infoContainer,
-    );
+    // type-container
+    this.#typeContainer = document.createElement('div');
+    this.#typeContainer.classList.add('type-container');
+    
+    {
+      const broad = document.createElement('button');
+      broad.innerText = 'Broad';
+      this.#bindTypeSelectionEvent(broad);
+
+      const slim = document.createElement('button');
+      slim.innerText = 'Slim';
+      this.#bindTypeSelectionEvent(slim);
+
+      if (type === 'broad') {
+        broad.classList.add('type-selected')
+      } else {
+        slim.classList.add('type-selected')
+      }
+
+      this.#typeContainer.append(broad, slim);
+    }
+
+    this.#updateSkinContainer();
+  }
+
+  /**
+   * @type {[HTMLDivElement, HTMLInputElement, HTMLDivElement]}
+   * @readonly
+   * @memberof SkinInfo
+   */
+  get elements() {
+    return [this.#skinContainer, this.#nameElement, this.#typeContainer];
   }
 
   get skin() {
-    return this.getAttribute('skin') || '';
+    return this.#skin;
   }
 
   set skin(value) {
-    this.setAttribute('skin', value);
+    this.#skin = value;
     this.#updateSkinContainer();
   }
 
   get name() {
-    return this.getAttribute('name') || '';
+    return this.#nameElement.value;
   }
 
   set name(value) {
@@ -113,7 +107,10 @@ class SkinInfo extends HTMLElement {
   }
 
   get type() {
-    return this.getAttribute('type') || 'broad';
+    return this.#typeContainer
+    .firstElementChild
+    .classList
+    .contains('type-selected') ? 'broad' : 'slim';
   }
 
   set type(value) {
@@ -136,10 +133,8 @@ class SkinInfo extends HTMLElement {
    * @param {HTMLButtonElement} button 
    * @memberof SkinInfo
    */
-  #addTypeSelection(button) {
+  #bindTypeSelectionEvent(button) {
     button.addEventListener('click', () => {
-      this.setAttribute('type', button.innerText.toLowerCase());
-
       button.classList.add('type-selected');
       (button.nextElementSibling || button.previousElementSibling).classList
       .remove('type-selected');
@@ -155,19 +150,14 @@ class SkinInfo extends HTMLElement {
    * @memberof SkinInfo
    */
   #updateSkinContainer() {
-    SkinViewer.generate(
-      this.getAttribute('skin'),
-      this.getAttribute('type'),
-    )
+    SkinViewer.generate(this.skin, this.type)
     .then((url) => {
-      this.#skinContainer.firstChild.src = url;
+      this.#skinContainer.firstElementChild.src = url;
     })
     .catch((reason) => {
       throw reason;
     });
   }
 }
-
-customElements.define('skin-info', SkinInfo);
 
 export default SkinInfo;
