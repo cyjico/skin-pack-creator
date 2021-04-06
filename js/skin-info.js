@@ -20,7 +20,7 @@ class SkinInfo {
   /**
    * Creates an instance of SkinInfo.
    *
-   * @param {string} skin
+   * @param {string|HTMLImageElement} skin
    * @param {string} [name='']
    * @param {string} [type='broad']
    * @memberof SkinInfo
@@ -29,9 +29,8 @@ class SkinInfo {
     // skin-container
     this.#skinContainer = document.createElement("div");
     this.#skinContainer.classList.add("skin-container");
-    this.#skinContainer.value = skin;
 
-    this.#skin = skin;
+    this.#skin = skin instanceof Image ? skin.src : skin;
 
     {
       const skinElement = document.createElement("img");
@@ -155,9 +154,6 @@ class SkinInfo {
     SkinViewer.generate(this.skin, this.type)
       .then((url) => {
         this.#skinContainer.firstElementChild.src = url;
-      })
-      .catch((reason) => {
-        throw reason;
       });
   }
 }

@@ -1,4 +1,5 @@
 import LANG from "./lang.js";
+import alertModal from './alert-modal.js';
 import SkinInfo from "./skin-info.js";
 
 /**
@@ -121,8 +122,10 @@ class SkinPack {
    */
   async download() {
     if (this.#skins.length == 0) {
+      alertModal("No skins present in the skin pack.");
       return Promise.reject(new Error("No skins present in the skin pack."));
     } else if (this.#nameElement.value.length === 0) {
+      alertModal("Skin pack has no name.");
       return Promise.reject(new Error("Skin pack has no name."));
     }
 
@@ -158,7 +161,8 @@ class SkinPack {
 
     for (let i = 0; i < this.#skins.length; i++) {
       if (this.#skins[i][1].name.length <= 0) {
-        return Promise.reject(`Skin ${i + 1} has no name.`);
+        alertModal(`Skin ${i + 1} has no name.`);
+        return Promise.reject(new Error(`Skin ${i + 1} has no name.`));
       }
 
       skins.skins.push({
@@ -202,12 +206,24 @@ class SkinPack {
    * nameElement: HTMLDivElement,
    * typeContainer: HTMLDivElement
    * ) => void} callback Callback called on each skin.
+   * @return {Promise<void|Error>}
    * @memberof SkinPack
    */
   async import(file, callback) {
     const zip = new JSZip();
 
     const contents = await zip.loadAsync(file);
+
+    if (!contents.files["manifest.json"]) {
+      alertModal('Missing file: manifest.json');
+      return Promise.reject(new Error('Missing file: manifest.json'));
+    } else if (!contents.files["skins.json"]) {
+      alertModal('Missing file: skins.json');
+      return Promise.reject(new Error('Missing file: skins.json'));
+    } else if (!contents.files["texts/en_US.lang"]) {
+      alertModal('Missing file: texts/en_US.lang');
+      return Promise.reject(new Error('Missing file: texts/en_US.lang'));
+    }
 
     const skins = JSON.parse(await contents.files["skins.json"].async("string"))
       .skins;
@@ -217,6 +233,7 @@ class SkinPack {
 
     for (let i = 0; i < skins.length; i++) {
       if (!contents.files[skins[i].texture]) {
+        alertModal(`Missing texture: ${skins[i].texture}`);
         continue;
       }
 
@@ -231,6 +248,8 @@ class SkinPack {
         callback(this.upload(new File([blob], skins[i].texture), skinInfo));
       });
     }
+
+    return Promise.resolve();
   }
 }
 

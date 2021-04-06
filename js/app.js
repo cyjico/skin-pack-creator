@@ -1,5 +1,7 @@
 import SkinPack from "./skin-pack.js";
 import SkinInfo from "./skin-info.js";
+import SkinViewer from "./skin-viewer.js";
+import alertModal from "./alert-modal.js";
 
 (function () {
   const skinPack = new SkinPack(document.querySelector("header > input"));
@@ -16,29 +18,42 @@ import SkinInfo from "./skin-info.js";
 
   function uploadListener() {
     for (let i = 0; i < uploadElement.files.length; i++) {
-      const elements = skinPack.upload(
-        uploadElement.files[i],
-        new SkinInfo(URL.createObjectURL(uploadElement.files[i])),
-      );
+      const fileName = uploadElement.files[i].name;
+      const image = document.createElement('img');
+      image.src = URL.createObjectURL(uploadElement.files[i]);
 
-      mainElement.insertBefore(elements[0], footerElement);
-      mainElement.insertBefore(elements[1], footerElement);
-      mainElement.insertBefore(elements[2], footerElement);
+      image.onload = () => {
+        const format = SkinViewer.getImageFormat(image);
+        if (format.length <= 0) {
+          alertModal(`"${fileName}" is an invalid Minecraft skin.`);
+        } else {
+          const elements = skinPack.upload(
+            uploadElement.files[i],
+            new SkinInfo(image),
+          );
+
+          mainElement.insertBefore(elements[0], footerElement);
+          mainElement.insertBefore(elements[1], footerElement);
+          mainElement.insertBefore(elements[2], footerElement);
+        }
+      }
     }
 
     uploadElement.value = null;
   }
 
-  async function downloadListener() {
-    await skinPack.download();
+  function downloadListener() {
+    skinPack.download().catch();
   }
 
-  async function importListener() {
-    await skinPack.import(importElement.files[0], (elements) => {
-      mainElement.insertBefore(elements[0], footerElement);
-      mainElement.insertBefore(elements[1], footerElement);
-      mainElement.insertBefore(elements[2], footerElement);
-    });
+  function importListener() {
+    skinPack
+      .import(importElement.files[0], (elements) => {
+        mainElement.insertBefore(elements[0], footerElement);
+        mainElement.insertBefore(elements[1], footerElement);
+        mainElement.insertBefore(elements[2], footerElement);
+      })
+      .catch();
 
     importElement.value = null;
   }
