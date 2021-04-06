@@ -13,6 +13,11 @@
   src: url("fonts/Minecraft/Minecraft-Regular.ttf") format("truetype");
 }
 
+@font-face {
+  font-family: "Press Start 2P";
+  src: url("fonts/Press Start 2P/PressStart2P-Regular.ttf") format("truetype");
+}
+
 /* Body */
 
 body {
@@ -86,12 +91,6 @@ main footer {
   justify-content: center;
 }
 
-#upload-skin + label:active,
-#download-skin-pack:active,
-#import-skinpack + label:active {
-  border: 0.05em #8d9696 solid;
-}
-
 #upload-skin,
 #import-skinpack {
   display: none;
@@ -138,4 +137,44 @@ button {
   background-color: #f3f7fc;
   border: 0.05em #d0d5da solid;
   font-family: "Minecraft-Regular", sans-serif;
+}
+
+label:active,
+label:hover,
+button:focus,
+button:hover {
+  border: 0.05em #8d9696 solid;
+  outline: none;
+  text-decoration: none;
+}
+
+.modal {
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  position: fixed;
+  background-color: #1e1f2080;
+}
+
+.modal-content {
+  padding: 2rem;
+  position: relative;
+  background-color: #f3f7fc;
+  border-radius: 0.25rem;
+}
+
+.modal-close {
+  border-color: transparent;
+  top: 0.5em;
+  right: 0.5em;
+  font-size: 0.75rem;
+  padding: 0.5em;
+  position: absolute;
+  font-family: "Press Start 2P", cursive;
 }

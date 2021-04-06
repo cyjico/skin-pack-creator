@@ -1,3 +1,5 @@
+import alertModal from './alert-modal.js';
+
 /**
  * Generate the front-view of the right/left arm.
  *
@@ -107,12 +109,32 @@ function generateLeg(
  */
 class SkinViewer {
   /**
+   * Retrieves image format of a Minecraft skin.
+   *
+   * @static
+   * @param {HTMLImageElement} image
+   * @return {'HD'|'SD'|'LD'|''}
+   * @memberof SkinViewer
+   */
+  static getImageFormat(image) {
+    if (image.width === 64 && image.height === 32) {
+      return 'LD';
+    } else if (image.width === 128 && image.height === 128) {
+      return 'HD';
+    } else if (image.width === 64 && image.height == 64) {
+      return 'SD';
+    }
+
+    return '';
+  }
+
+  /**
    * Generates the front-view of a Minecraft skin.
    *
    * @static
    * @param {string} address
    * @param {string} type
-   * @return {Promise<string>}
+   * @return {Promise<string|Error>}
    * @memberof SkinViewer
    */
   static generate(address, type) {
@@ -121,21 +143,14 @@ class SkinViewer {
 
     return new Promise((resolve, reject) => {
       image.addEventListener("load", () => {
-        const isLowRes = image.width === 64 && image.height === 32;
-        const isHighRes = image.width === 128 && image.height === 128;
+        const format = this.getImageFormat(image);
 
-        if (
-          !(
-            isLowRes ||
-            (image.width === 64 && image.height === 64) ||
-            isHighRes
-          )
-        ) {
-          reject(new Error("Invalid skin format."));
+        if (!format) {
+          return reject(new Error('Invalid skin format.'));
         }
 
         const canvas = document.createElement("canvas");
-        const resolutionFactor = isHighRes ? 1 : 0.5;
+        const resolutionFactor = format === 'HD' ? 1 : 0.5;
         const armWidth = (type === "slim" ? 6 : 8) * resolutionFactor;
         const resized40 = 40 * resolutionFactor;
         const resized24 = 24 * resolutionFactor;
@@ -199,6 +214,9 @@ class SkinViewer {
           resized16,
           resized24,
         );
+
+        // Other parts
+        const isLowRes = format === 'LD';
 
         generateArm(image, context, resolutionFactor, armWidth, isLowRes, true);
 
